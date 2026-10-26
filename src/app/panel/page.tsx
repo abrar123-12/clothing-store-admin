@@ -8,6 +8,11 @@ import { defaultSettings } from "@/lib/data";
 
 type Tab = "dashboard" | "products" | "orders" | "categories" | "settings";
 const STATUSES = ["Pending", "Confirmed", "Shipped", "Delivered", "Cancelled"];
+const statusBadge = (st: string) => "badge " + ({
+  Pending: "bg-amber-100 text-amber-800", Confirmed: "bg-blue-100 text-blue-800",
+  Shipped: "bg-violet-100 text-violet-800", Delivered: "bg-emerald-100 text-emerald-800",
+  Cancelled: "bg-red-100 text-red-600"
+} as Record<string, string>)[st] || "bg-slate-100 text-slate-700";
 
 interface RawProduct { id: string; name: string; description: string; category_id: string; price: number; sale_price: number | null; image_url: string; sizes: string; stock: number; featured: boolean; active: boolean; }
 interface RawCategory { id: string; name: string; slug: string; }
@@ -159,39 +164,43 @@ export default function AdminPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <h1 className="font-display font-black uppercase text-2xl text-brand">KAPOR Admin Panel</h1>
-        <div className="flex gap-2"><a href="https://clothing-store-mauve-pi.vercel.app/" target="_blank" rel="noreferrer" className="border font-bold px-4 py-2 rounded-full text-sm">🛍️ View Store</a><button onClick={logout} className="border font-bold px-4 py-2 rounded-full text-sm">Logout</button></div>
+      <div className="sticky top-0 z-10 -mx-4 px-4 py-3 bg-white/90 backdrop-blur border-b border-slate-200 flex items-center justify-between flex-wrap gap-3">
+        <h1 className="font-display font-bold text-xl text-emerald-700">🛍️ KAPOR Admin</h1>
+        <div className="flex gap-2"><a href="https://clothing-store-mauve-pi.vercel.app/" target="_blank" rel="noreferrer" className="btn-secondary py-2 text-sm">View Store</a><button onClick={logout} className="btn-secondary py-2 text-sm">Logout</button></div>
       </div>
       {msg && <p className="mt-3 bg-green-50 border border-green-200 text-green-800 rounded-xl px-4 py-2 text-sm font-semibold">{msg}</p>}
       <div className="flex gap-2 mt-4 overflow-x-auto no-scrollbar">
         {(["dashboard", "products", "orders", "categories", "settings"] as Tab[]).map(t => (
-          <button key={t} onClick={() => setTab(t)} className={`px-4 py-2 rounded-full font-bold text-sm uppercase whitespace-nowrap ${tab === t ? "bg-brand text-white" : "border"}`}>{t}</button>
+          <button key={t} onClick={() => setTab(t)} className={`px-4 py-2 rounded-full font-bold text-sm uppercase whitespace-nowrap ${tab === t ? "bg-emerald-600 text-white" : "border"}`}>{t}</button>
         ))}
       </div>
 
       {tab === "dashboard" && (
         <div className="mt-6">
+          <div className="rounded-2xl bg-gradient-to-r from-emerald-700 to-emerald-500 p-5 text-white mb-5">
+            <p className="text-xl font-bold">Welcome back, Admin 👋</p>
+            <p className="mt-1 text-emerald-50 text-sm">Ajke {todayOrders} ta order • {pending} ta pending • Mot {orders.length} ta order</p>
+          </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <div className="border rounded-2xl p-4"><p className="text-xs uppercase text-neutral-500 font-bold">Revenue (Delivered)</p><p className="text-2xl font-black text-brand mt-1">{formatBDT(revenue)}</p></div>
-            <div className="border rounded-2xl p-4"><p className="text-xs uppercase text-neutral-500 font-bold">Total Orders</p><p className="text-2xl font-black mt-1">{orders.length}</p></div>
-            <div className="border rounded-2xl p-4"><p className="text-xs uppercase text-neutral-500 font-bold">Pending Orders</p><p className="text-2xl font-black mt-1 text-amber-600">{pending}</p></div>
-            <div className="border rounded-2xl p-4"><p className="text-xs uppercase text-neutral-500 font-bold">Products</p><p className="text-2xl font-black mt-1">{products.length}</p></div>
-            <div className="border rounded-2xl p-4"><p className="text-xs uppercase text-neutral-500 font-bold">Today&apos;s Orders</p><p className="text-2xl font-black mt-1">{todayOrders}</p></div>
-            <div className="border rounded-2xl p-4"><p className="text-xs uppercase text-neutral-500 font-bold">Total Revenue (excl. Cancelled)</p><p className="text-2xl font-black text-brand mt-1">{formatBDT(totalRevenue)}</p></div>
+            <div className="card p-5"><p className="text-xs uppercase text-neutral-500 font-bold">Revenue (Delivered)</p><p className="text-2xl font-black text-emerald-700 mt-1">{formatBDT(revenue)}</p></div>
+            <div className="card p-5"><p className="text-xs uppercase text-neutral-500 font-bold">Total Orders</p><p className="text-2xl font-black mt-1">{orders.length}</p></div>
+            <div className="card p-5"><p className="text-xs uppercase text-neutral-500 font-bold">Pending Orders</p><p className="text-2xl font-black mt-1 text-amber-600">{pending}</p></div>
+            <div className="card p-5"><p className="text-xs uppercase text-neutral-500 font-bold">Products</p><p className="text-2xl font-black mt-1">{products.length}</p></div>
+            <div className="card p-5"><p className="text-xs uppercase text-neutral-500 font-bold">Today&apos;s Orders</p><p className="text-2xl font-black mt-1">{todayOrders}</p></div>
+            <div className="card p-5"><p className="text-xs uppercase text-neutral-500 font-bold">Total Revenue (excl. Cancelled)</p><p className="text-2xl font-black text-emerald-700 mt-1">{formatBDT(totalRevenue)}</p></div>
           </div>
           <h3 className="font-display font-extrabold uppercase mt-8 mb-3">⚠️ Low Stock (under 5)</h3>
           {lowStock.length === 0 ? <p className="text-sm text-neutral-500">No low-stock products. Good!</p> : (
             <div className="flex flex-col gap-2">{lowStock.map(p => <div key={p.id} className="border border-amber-200 bg-amber-50 rounded-xl px-4 py-2 text-sm flex justify-between"><span>{p.name}</span><b>Stock: {p.stock}</b></div>)}</div>
           )}
           <h3 className="font-display font-extrabold uppercase mt-8 mb-3">Latest Orders</h3>
-          <div className="flex flex-col gap-2">{orders.slice(0, 5).map(o => <div key={o.id} className="border rounded-xl px-4 py-2 text-sm flex justify-between flex-wrap gap-2"><span>#{String(o.id).slice(0, 8)} — {o.customer_name} ({o.phone})</span><b>{o.status} • {formatBDT(Number(o.total))}</b></div>)}</div>
+          <div className="flex flex-col gap-2">{orders.slice(0, 5).map(o => <div key={o.id} className="border rounded-xl px-4 py-2 text-sm flex justify-between flex-wrap gap-2"><span>#{String(o.id).slice(0, 8)} — {o.customer_name} ({o.phone})</span><span><span className={statusBadge(o.status)}>{o.status}</span> • <b>{formatBDT(Number(o.total))}</b></span></div>)}</div>
         </div>
       )}
 
       {tab === "products" && (
         <div className="mt-6 grid lg:grid-cols-5 gap-6">
-          <div className="lg:col-span-2 border rounded-2xl p-4 h-fit">
+          <div className="lg:col-span-2 card p-5 h-fit">
             <h3 className="font-display font-extrabold uppercase mb-3">{form.id ? "Edit Product" : "Add Product"}</h3>
             <div className="flex flex-col gap-3">
               <div><p className={labelCls}>Name</p><input className={inputCls} value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></div>
@@ -213,14 +222,14 @@ export default function AdminPage() {
               </div>
               <label className="flex gap-2 text-sm items-center"><input type="checkbox" checked={form.featured} onChange={e => setForm({ ...form, featured: e.target.checked })} /> Featured (Best Selling)</label>
               <label className="flex gap-2 text-sm items-center"><input type="checkbox" checked={form.active} onChange={e => setForm({ ...form, active: e.target.checked })} /> Active (visible in shop)</label>
-              <button onClick={saveProduct} className="bg-brand text-white font-bold py-3 rounded-full">{form.id ? "UPDATE PRODUCT" : "ADD PRODUCT"}</button>
+              <button onClick={saveProduct} className="bg-emerald-600 text-white font-bold py-3 rounded-full">{form.id ? "UPDATE PRODUCT" : "ADD PRODUCT"}</button>
               {form.id && <button onClick={() => setForm(emptyProduct)} className="border font-bold py-2 rounded-full text-sm">Cancel Edit</button>}
             </div>
           </div>
           <div className="lg:col-span-3 flex flex-col gap-2">
             <input className={inputCls} placeholder="Search products by name..." value={prodQuery} onChange={e => setProdQuery(e.target.value)} />
             {shownProducts.map(p => (
-              <div key={p.id} className="border rounded-xl p-3 flex gap-3 items-center">
+              <div key={p.id} className="card p-3 flex gap-3 items-center">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={p.image_url} alt={p.name} className="w-14 h-14 rounded-lg object-cover" />
                 <div className="flex-1 min-w-0">
@@ -240,28 +249,29 @@ export default function AdminPage() {
         <div className="mt-6 flex flex-col gap-3">
           <div className="flex gap-2 flex-wrap">
             <input className={`${inputCls} flex-1 min-w-[200px]`} placeholder="Search by customer name or phone..." value={orderQuery} onChange={e => setOrderQuery(e.target.value)} />
-            <select className="border rounded-xl px-3 py-2.5 text-sm font-semibold" value={orderStatusFilter} onChange={e => setOrderStatusFilter(e.target.value)}>
+            <select className="border rounded-xl px-3 py-2.5 text-sm font-semibold w-auto" value={orderStatusFilter} onChange={e => setOrderStatusFilter(e.target.value)}>
               <option>All</option>
               {STATUSES.map(st => <option key={st} value={st}>{st}</option>)}
             </select>
           </div>
           <p className="text-xs text-neutral-500">Showing {shownOrders.length} of {orders.length} orders</p>
           {shownOrders.map(o => (
-            <div key={o.id} className="border rounded-2xl p-4">
+            <div key={o.id} className="card p-5">
               <div className="flex justify-between flex-wrap gap-2">
-                <b>#{String(o.id).slice(0, 8)}</b>
+                <span className="flex items-center gap-2"><b>#{String(o.id).slice(0, 8)}</b><span className={statusBadge(o.status)}>{o.status}</span></span>
                 <span className="text-sm text-neutral-500">{new Date(o.created_at).toLocaleString()}</span>
               </div>
               <p className="text-sm mt-1">{o.customer_name} • {o.phone}</p>
               <p className="text-sm text-neutral-600">{o.address} ({o.area === "dhaka" ? "Inside Dhaka" : "Outside Dhaka"})</p>
               <div className="text-sm mt-2">{o.order_items?.map((it, i) => <p key={i}>• {it.product_name} (Size {it.size}) × {it.qty} — {formatBDT(Number(it.price) * it.qty)}</p>)}</div>
-              <p className="text-sm mt-2">Payment: <b>{o.payment_method}</b>{o.payment_trx ? ` • TrxID: ${o.payment_trx}` : ""} • Delivery {formatBDT(Number(o.delivery_charge))} • <b className="text-brand">Total {formatBDT(Number(o.total))}</b></p>
+              <p className="text-sm mt-2">Payment: <b>{o.payment_method}</b>{o.payment_trx ? ` • TrxID: ${o.payment_trx}` : ""} • Delivery {formatBDT(Number(o.delivery_charge))} • <b className="text-emerald-700">Total {formatBDT(Number(o.total))}</b></p>
               <div className="flex items-center gap-2 mt-3">
                 <span className="text-xs font-bold uppercase">Status:</span>
-                <select value={o.status} onChange={e => setOrderStatus(o.id, e.target.value)} className="border rounded-full px-3 py-1.5 text-sm font-semibold">
+                <select value={o.status} onChange={e => setOrderStatus(o.id, e.target.value)} className="border rounded-full px-3 py-1.5 text-sm font-semibold w-auto">
                   {STATUSES.map(st => <option key={st} value={st}>{st}</option>)}
                 </select>
                 <a href={`tel:${o.phone}`} className="border font-bold px-3 py-1.5 rounded-full text-xs">📞 Call Customer</a>
+                <a href={`https://wa.me/880${o.phone.replace(/\D/g, "").replace(/^0/, "")}`} target="_blank" rel="noreferrer" className="border font-bold px-3 py-1.5 rounded-full text-xs">💬 WhatsApp</a>
               </div>
             </div>
           ))}
@@ -271,15 +281,15 @@ export default function AdminPage() {
 
       {tab === "categories" && (
         <div className="mt-6 max-w-lg">
-          <div className="border rounded-2xl p-4 flex flex-col gap-3">
+          <div className="card p-5 flex flex-col gap-3">
             <h3 className="font-display font-extrabold uppercase">Add Category</h3>
             <input className={inputCls} placeholder="Name (e.g. Shoes)" value={catName} onChange={e => setCatName(e.target.value)} />
             <input className={inputCls} placeholder="Slug (optional, e.g. shoes)" value={catSlug} onChange={e => setCatSlug(e.target.value)} />
-            <button onClick={saveCategory} className="bg-brand text-white font-bold py-2.5 rounded-full">ADD CATEGORY</button>
+            <button onClick={saveCategory} className="bg-emerald-600 text-white font-bold py-2.5 rounded-full">ADD CATEGORY</button>
           </div>
           <div className="flex flex-col gap-2 mt-4">
             {categories.map(c => (
-              <div key={c.id} className="border rounded-xl px-4 py-2.5 flex justify-between items-center">
+              <div key={c.id} className="card px-4 py-2.5 flex justify-between items-center">
                 <span className="font-semibold text-sm">{c.name} <span className="text-neutral-400">/{c.slug}</span></span>
                 <button onClick={() => deleteCategory(c.id, c.name)} className="bg-red-50 text-red-600 font-bold px-3 py-1 rounded-full text-xs">Delete</button>
               </div>
@@ -289,7 +299,7 @@ export default function AdminPage() {
       )}
 
       {tab === "settings" && (
-        <div className="mt-6 max-w-2xl border rounded-2xl p-4 flex flex-col gap-4">
+        <div className="mt-6 max-w-2xl card p-5 flex flex-col gap-4">
           <h3 className="font-display font-extrabold uppercase">Store Settings</h3>
           <div><p className={labelCls}>Store Name</p><input className={inputCls} value={settings.store_name} onChange={e => setSettings({ ...settings, store_name: e.target.value })} /></div>
           <div className="grid grid-cols-2 gap-3">
@@ -319,7 +329,7 @@ export default function AdminPage() {
               </div>
             );
           })}
-          <button onClick={saveSettings} className="bg-brand text-white font-bold py-3 rounded-full">SAVE SETTINGS</button>
+          <button onClick={saveSettings} className="bg-emerald-600 text-white font-bold py-3 rounded-full">SAVE SETTINGS</button>
         </div>
       )}
     </div>

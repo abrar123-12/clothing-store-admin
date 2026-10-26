@@ -19,8 +19,8 @@ const config: Config = {
         ink: "#111111"
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
-        display: ["Archivo", "Inter", "system-ui", "sans-serif"]
+        sans: ['"Hind Siliguri"', '"Noto Sans Bengali"', "system-ui", "sans-serif"],
+        display: ['"Hind Siliguri"', '"Noto Sans Bengali"', "system-ui", "sans-serif"]
       }
     }
   },
