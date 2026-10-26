@@ -30,9 +30,9 @@ export default function AdminLoginPage() {
 
   return (
     <div className="max-w-sm mx-auto px-4 py-10">
-      <div className="rounded-2xl bg-gradient-to-r from-emerald-700 to-emerald-500 p-5 text-white md:p-6">
+      <div className="rounded-2xl bg-gradient-to-r from-amber-500 to-orange-400 p-5 text-white md:p-6">
         <h1 className="text-2xl font-bold">🛍️ KAPOR Admin</h1>
-        <p className="mt-1 text-emerald-50 text-sm">Store owner only. Dashboard, products, orders — sob ekhane.</p>
+        <p className="mt-1 text-amber-50 text-sm">Store owner only. Dashboard, products, orders — sob ekhane.</p>
       </div>
       <div className="card p-5 mt-4">
         <form onSubmit={login} className="flex flex-col gap-3">
